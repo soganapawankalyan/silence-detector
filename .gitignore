@@ -1,0 +1,17 @@
+# Generated data files
+data/
+outputs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# System
+.DS_Store
+.Rhistory
+
+# Jupyter
+.ipynb_checkpoints/

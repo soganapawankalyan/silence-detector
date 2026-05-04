@@ -1,0 +1,35 @@
+rules:
+  - rule_id: R01
+    name: First Response SLA
+    trigger_event: ticket_opened
+    expected_event: first_response
+    max_hours: 4
+    description: Every opened ticket must receive a first response within 4 hours
+
+  - rule_id: R02
+    name: Escalation Review SLA
+    trigger_event: ticket_escalated
+    expected_event: escalation_reviewed
+    max_hours: 2
+    description: Every escalated ticket must be reviewed within 2 hours
+
+  - rule_id: R03
+    name: Resolution Acknowledgment SLA
+    trigger_event: ticket_resolved
+    expected_event: resolution_confirmed
+    max_hours: 8
+    description: Every resolved ticket must be confirmed by the agent within 8 hours
+
+  - rule_id: R04
+    name: Customer Survey SLA
+    trigger_event: ticket_resolved
+    expected_event: survey_sent
+    max_hours: 24
+    description: Every resolved ticket must trigger a customer satisfaction survey within 24 hours
+
+  - rule_id: R05
+    name: Reassignment Response SLA
+    trigger_event: ticket_reassigned
+    expected_event: first_response
+    max_hours: 3
+    description: Every reassigned ticket must receive a response within 3 hours
