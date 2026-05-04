@@ -1,0 +1,6 @@
+rule_id,rule_name,max_hours,total_checks,total_violations,avg_hours_overdue,max_hours_overdue,violation_rate_pct
+R01,First Response SLA,4,500,137,1.1653318212057484,7.912707243627972,27.4
+R02,Escalation Review SLA,2,151,46,1.0775507984760493,5.888888746102651,30.5
+R03,Resolution Acknowledgment SLA,8,500,118,1.9197228062110478,15.991155388090345,23.6
+R04,Customer Survey SLA,24,500,242,12.389319794002375,47.97055757860343,48.4
+R05,Reassignment Response SLA,3,91,0,0.0,0.0,0.0

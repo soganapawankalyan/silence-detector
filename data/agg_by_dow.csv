@@ -1,0 +1,8 @@
+day_num,day_of_week,total_checks,total_violations,violation_rate_pct
+0,Monday,259,81,31.3
+1,Tuesday,196,61,31.1
+2,Wednesday,281,97,34.5
+3,Thursday,238,71,29.8
+4,Friday,257,76,29.6
+5,Saturday,258,75,29.1
+6,Sunday,253,82,32.4

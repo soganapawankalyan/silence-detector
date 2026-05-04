@@ -1,0 +1,6 @@
+category,total_checks,total_violations,violation_rate_pct
+Account,336,123,36.6
+Technical,330,111,33.6
+Billing,378,121,32.0
+Shipping,367,107,29.2
+Returns,331,81,24.5
