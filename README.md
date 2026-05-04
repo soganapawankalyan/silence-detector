@@ -1,5 +1,7 @@
 # 🔇 Silence Detector — SLA Violation Detection Engine
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://silence-detector-cyqfaxdald6bqwwoqg2wbl.streamlit.app/)
+
 > *Most dashboards show you what happened. This one shows you what should have happened — but didn't.*
 
 ---
