@@ -24,7 +24,12 @@ Standard monitoring tools catch errors that *occur*. They can't catch events tha
 2. Scans a customer support event log for expected follow-up events
 3. Flags every case where the expected event didn't happen within the allowed time window
 4. Aggregates violations by team, rule, hour, day, category, and month
-5. Surfaces findings in an interactive dashboard built for operational decision-making
+5. Surfaces findings in an interactive dashboard
+**Interactive features (v2):**
+- Upload your own event log CSV and map columns to run detection on real data
+- Ask natural language questions about violations — answered by Llama 3.2 running locally
+- Simulate what-if scenarios by adjusting SLA thresholds with sliders and seeing violation rates update live
+ built for operational decision-making
 
 ---
 
