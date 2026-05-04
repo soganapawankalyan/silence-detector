@@ -382,3 +382,117 @@ if st.button("Get Answer") and user_question.strip():
     with st.spinner("Thinking... (10-30 seconds)"):
         answer = ask_ollama(user_question, violations)
     st.success(answer)
+
+# ── What-if Simulator ─────────────────────────────────────────────────────────
+st.divider()
+st.subheader("What-if SLA Threshold Simulator")
+st.markdown("Adjust SLA thresholds below and see how violation rates would change.")
+
+import yaml
+
+with open("config/sla_rules.yaml") as f:
+    rules = yaml.safe_load(f)["rules"]
+
+rules_to_simulate = [r for r in rules if r["rule_id"] != "R05"]
+
+st.markdown("#### Adjust thresholds")
+new_thresholds = {}
+slider_cols = st.columns(len(rules_to_simulate))
+
+for i, rule in enumerate(rules_to_simulate):
+    with slider_cols[i]:
+        new_val = st.slider(
+            rule["name"].replace(" SLA", ""),
+            min_value=1,
+            max_value=48,
+            value=rule["max_hours"],
+            step=1,
+            help=f"Current: {rule['max_hours']}h"
+        )
+        new_thresholds[rule["rule_id"]] = new_val
+
+st.markdown("#### Impact on violation rates")
+
+sim_rows = []
+for rule in rules_to_simulate:
+    rid = rule["rule_id"]
+    rname = rule["name"]
+    original_hours = rule["max_hours"]
+    new_hours = new_thresholds[rid]
+
+    rule_df = violations[violations["rule_id"] == rid].copy()
+    total = len(rule_df)
+    if total == 0:
+        continue
+
+    original_violations = int(rule_df["is_violation"].sum())
+    original_rate = round(100 * original_violations / total, 1)
+
+    new_violations = int(
+        rule_df.apply(
+            lambda row: 1 if (
+                row["missing_entirely"] == 1 or
+                (row["actual_hours"] is not None and row["actual_hours"] > new_hours)
+            ) else 0,
+            axis=1
+        ).sum()
+    )
+    new_rate = round(100 * new_violations / total, 1)
+    delta = round(new_rate - original_rate, 1)
+
+    sim_rows.append({
+        "Rule": rname.replace(" SLA", ""),
+        "Original Threshold": f"{original_hours}h",
+        "New Threshold": f"{new_hours}h",
+        "Original Violations": f"{original_rate}%",
+        "New Violations": f"{new_rate}%",
+        "Change": f"{delta:+.1f}%",
+        "_delta": delta,
+    })
+
+sim_df = pd.DataFrame(sim_rows)
+
+scol1, scol2 = st.columns(2)
+
+with scol1:
+    display_df = sim_df[["Rule","Original Threshold","New Threshold","Original Violations","New Violations","Change"]].copy()
+    st.dataframe(display_df, use_container_width=True, hide_index=True)
+
+with scol2:
+    fig_sim = go.Figure()
+    fig_sim.add_trace(go.Bar(
+        name="Original",
+        x=sim_df["Rule"],
+        y=[float(v.replace("%","")) for v in sim_df["Original Violations"]],
+        marker_color="#4C9BE8",
+    ))
+    fig_sim.add_trace(go.Bar(
+        name="Simulated",
+        x=sim_df["Rule"],
+        y=[float(v.replace("%","")) for v in sim_df["New Violations"]],
+        marker_color="#E8694C",
+    ))
+    fig_sim.update_layout(
+        barmode="group",
+        yaxis_title="Violation Rate (%)",
+        yaxis_range=[0, 70],
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        margin=dict(t=20, b=60),
+        height=350,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02),
+        xaxis=dict(tickangle=-15, tickfont=dict(size=11))
+    )
+    fig_sim.update_yaxes(showgrid=True, gridcolor="#EEEEEE")
+    st.plotly_chart(fig_sim, use_container_width=True)
+
+total_original = sum(float(v.replace("%","")) for v in sim_df["Original Violations"]) / len(sim_df)
+total_new = sum(float(v.replace("%","")) for v in sim_df["New Violations"]) / len(sim_df)
+net_change = round(total_new - total_original, 1)
+
+if net_change < 0:
+    st.info(f"Relaxing these thresholds would reduce average violation rate by {abs(net_change)} percentage points.")
+elif net_change > 0:
+    st.warning(f"Tightening these thresholds would increase average violation rate by {net_change} percentage points.")
+else:
+    st.info("No change in overall violation rate with current settings.")
